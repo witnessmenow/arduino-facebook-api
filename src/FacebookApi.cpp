@@ -51,7 +51,7 @@ String FacebookApi::sendGetToFacebook(String command) {
 				// Allow body to be parsed before finishing
 				avail = finishedHeaders;
 				char c = client->read();
-				//Serial.write(c);
+				// Serial.write(c);
 
 				if(!finishedHeaders){
 					if (currentLineIsBlank && c == '\n') {
@@ -76,9 +76,15 @@ String FacebookApi::sendGetToFacebook(String command) {
 				}
 			}
 			if (avail) {
-				Serial.println("Body:");
-				Serial.println(body);
-				Serial.println("END");
+        // For some reason the body is coming back with a number on the outside of the start and end of it, we only want the JsonObject
+        int firstJsonCharacterIndex = body.indexOf("{");
+        int lastJsonCharacterIndex = body.lastIndexOf("}");
+        if(firstJsonCharacterIndex != -1 && lastJsonCharacterIndex != -1){
+          body = body.substring(firstJsonCharacterIndex, lastJsonCharacterIndex + 1);
+        }
+				// Serial.println("Body:");
+				// Serial.println(body);
+				// Serial.println("END");
 				break;
 			}
 		}
@@ -99,7 +105,7 @@ int FacebookApi::getTotalFriends(){
 	JsonObject& root = jsonBuffer.parseObject(response);
   if (root.success()) {
 		if (root.containsKey("summary")) {
-			returrn root["summary"]["total_count"].as<int>();
+			return root["summary"]["total_count"].as<int>();
 		} else {
       Serial.println("JSON respnse was not as expected");
     }

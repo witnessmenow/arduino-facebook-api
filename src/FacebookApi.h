@@ -30,9 +30,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 #define FB_API_SSL_PORT 443
 #define FB_API_TIMEOUT 1500
 
-curl -i -X GET \
- "https://graph.facebook.com/v2.9/me/friends?access_token=EAACEdEose0cBAF7ZCXyG15vfmXZAUBCN2raTBcfFv5GEo1fvD2Gg4zAxZB85Wg7H11xp9gjeZA4aYZAtaVq7ekFMVhLItCxRxkWiFJLKyv8IYRS1DN5ZCB5zYMrTUYMd4vYAguSdulv5EeWJCnMM1euB5YhyjwVvNjpaZCKkkAMg6oAc0GF6BXlh8mvwQwByvsZD"
-
 class FacebookApi
 {
   public:
