@@ -35,7 +35,7 @@ String FacebookApi::sendGetToFacebook(String command) {
 	bool avail;
 	// Connect with facebook api over ssl
 	if (client->connect(FB_API_HOST, FB_API_SSL_PORT)) {
-		Serial.println(".... connected to server");
+		//Serial.println(".... connected to server");
 		String a="";
 		char c;
 		int ch_count=0;
@@ -56,7 +56,7 @@ String FacebookApi::sendGetToFacebook(String command) {
 				if(!finishedHeaders){
 					if (currentLineIsBlank && c == '\n') {
 						finishedHeaders = true;
-						Serial.println(headers);
+						//Serial.println(headers);
 					}
 					else{
 						headers = headers + c;
@@ -97,6 +97,26 @@ String FacebookApi::getFriends(){
 	String command="/v2.9/me/friends?access_token="+_accessToken;
 	//Serial.println(command);
 	return sendGetToFacebook(command);  //recieve reply from facebook
+}
+
+String FacebookApi::extendAccessToken(String appId, String appSecret){
+	String command="/oauth/access_token?client_id="+ appId +"&client_secret=" + appSecret + "&grant_type=fb_exchange_token&fb_exchange_token="+_accessToken;
+	//Serial.println(command);
+	String response = sendGetToFacebook(command);
+  DynamicJsonBuffer jsonBuffer;
+	JsonObject& root = jsonBuffer.parseObject(response);
+  if (root.success()) {
+		if (root.containsKey("access_token")) {
+			Serial.println("Updated Token");
+			_accessToken = root["access_token"].as<String>();
+			return _accessToken;
+		} else {
+      Serial.println("JSON respnse was not as expected");
+    }
+  } else {
+    Serial.println("Failed to parse JSON");
+  }
+	return "";
 }
 
 int FacebookApi::getTotalFriends(){

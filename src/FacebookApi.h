@@ -37,6 +37,7 @@ class FacebookApi
     String sendGetToFacebook(String command);
     String getFriends();
     int getTotalFriends();
+    String extendAccessToken(String appId, String appSecret);
 
   private:
     Client *client;
