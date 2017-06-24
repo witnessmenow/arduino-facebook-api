@@ -21,9 +21,11 @@
 
 #include "FacebookApi.h"
 
-FacebookApi::FacebookApi(Client &client, String accessToken)	{
+FacebookApi::FacebookApi(Client &client, String appId, String appSecret, String accessToken)	{
 	this->client = &client;
   _accessToken = accessToken;
+	_appId = appId;
+	_appSecret = appSecret;
 }
 
 String FacebookApi::sendGetToFacebook(String command) {
@@ -94,13 +96,13 @@ String FacebookApi::sendGetToFacebook(String command) {
 }
 
 String FacebookApi::getFriends(){
-	String command="/v2.9/me/friends?access_token="+_accessToken;
+	String command = "/v2.9/me/friends?access_token="+_accessToken;
 	//Serial.println(command);
 	return sendGetToFacebook(command);  //recieve reply from facebook
 }
 
-String FacebookApi::extendAccessToken(String appId, String appSecret){
-	String command="/oauth/access_token?client_id="+ appId +"&client_secret=" + appSecret + "&grant_type=fb_exchange_token&fb_exchange_token="+_accessToken;
+String FacebookApi::extendAccessToken() {
+	String command="/oauth/access_token?client_id=" + _appId + "&client_secret=" + _appSecret + "&grant_type=fb_exchange_token&fb_exchange_token="+_accessToken;
 	//Serial.println(command);
 	String response = sendGetToFacebook(command);
   DynamicJsonBuffer jsonBuffer;
@@ -112,6 +114,7 @@ String FacebookApi::extendAccessToken(String appId, String appSecret){
 			return _accessToken;
 		} else {
       Serial.println("JSON respnse was not as expected");
+			root.prettyPrintTo(Serial);
     }
   } else {
     Serial.println("Failed to parse JSON");
@@ -133,5 +136,23 @@ int FacebookApi::getTotalFriends(){
     Serial.println("Failed to parse JSON");
   }
 
+  return -1;
+}
+
+int FacebookApi::getTotalObjectLikes(String objectId) {
+	String command = "/v2.9/" + objectId + "?fields=fan_count&access_token=" + _appId + "|" + _appSecret;
+	String response = sendGetToFacebook(command);
+
+  DynamicJsonBuffer jsonBuffer;
+	JsonObject& root = jsonBuffer.parseObject(response);
+	if(root.success()) {
+		if(root.containsKey("fan_count")) {
+			return root["fan_count"].as<int>();
+		} else {
+			Serial.println("JSON respnse was not as expected");
+		}
+  }	else {
+		Serial.println("Failed to parse JSON");
+	}
   return -1;
 }

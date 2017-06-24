@@ -33,16 +33,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 class FacebookApi
 {
   public:
-    FacebookApi (Client &client, String accessToken);
-    String sendGetToFacebook(String command);
+    FacebookApi(Client &client, String appId, String appSecret, String accessToken);
     String getFriends();
     int getTotalFriends();
-    String extendAccessToken(String appId, String appSecret);
+    int getTotalObjectLikes(String objectId);
+    String extendAccessToken();
 
   private:
     Client *client;
+    String _appId;
+    String _appSecret;
     String _accessToken;
     const int maxMessageLength = 10000;
+    String sendGetToFacebook(String command);
 };
 
 #endif
