@@ -21,7 +21,7 @@
 
 #include "FacebookApi.h"
 
-FacebookApi::FacebookApi(Client &client, String appId, String appSecret, String accessToken)	{
+FacebookApi::FacebookApi(Client &client, String accessToken, String appId = "", String appSecret = "") {
 	this->client = &client;
   _accessToken = accessToken;
 	_appId = appId;
@@ -91,7 +91,6 @@ String FacebookApi::sendGetToFacebook(String command) {
 			}
 		}
 	}
-
 	return body;
 }
 
@@ -102,7 +101,11 @@ String FacebookApi::getFriends(){
 }
 
 String FacebookApi::extendAccessToken() {
-	String command="/oauth/access_token?client_id=" + _appId + "&client_secret=" + _appSecret + "&grant_type=fb_exchange_token&fb_exchange_token="+_accessToken;
+		extendAccessToken(_appId , _appSecret);
+}
+
+String FacebookApi::extendAccessToken(String appId, String appSecret){
+	String command="/oauth/access_token?client_id="+ appId +"&client_secret=" + appSecret + "&grant_type=fb_exchange_token&fb_exchange_token="+_accessToken;
 	//Serial.println(command);
 	String response = sendGetToFacebook(command);
   DynamicJsonBuffer jsonBuffer;
@@ -114,7 +117,6 @@ String FacebookApi::extendAccessToken() {
 			return _accessToken;
 		} else {
       Serial.println("JSON respnse was not as expected");
-			root.prettyPrintTo(Serial);
     }
   } else {
     Serial.println("Failed to parse JSON");
@@ -139,8 +141,16 @@ int FacebookApi::getTotalFriends(){
   return -1;
 }
 
-int FacebookApi::getTotalObjectLikes(String objectId) {
-	String command = "/v2.9/" + objectId + "?fields=fan_count&access_token=" + _appId + "|" + _appSecret;
+/**
+ * From the official Facebook API documentation
+ *
+ * "The number of users who like the Page.
+ *  For Global Pages this is the count for all Pages across the brand."
+ *
+ *  https://developers.facebook.com/docs/graph-api/reference/page
+ */
+int FacebookApi::getPageFanCount(String pageId) {
+	String command = "/v2.9/" + pageId + "?fields=fan_count&access_token=" + _appId + "|" + _appSecret;
 	String response = sendGetToFacebook(command);
 
   DynamicJsonBuffer jsonBuffer;

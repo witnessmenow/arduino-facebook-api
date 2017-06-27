@@ -1,5 +1,7 @@
 /*********************************************************************
- *  Get your Facebook friends count  *
+ *  Get the fan count of an Facebook object. This could for instance *
+ *  be a page.                                                       *
+ *  https://developers.facebook.com/docs/graph-api/reference/page    *
  *                                                                   *
  *  By Brian Lough                                                   *
  *  https://www.youtube.com/channel/UCezJOfu7OtqGzd5xrP3q6WA         *
@@ -25,7 +27,7 @@ char password[] = "yyyy";  // your network key
 
 // These tokens expire so this one will be used once and use the
 // extendAccessToken method to get a renwed one that lasts 60 days
-String FACEBOOK_ACCESS_TOKEN = "";    // not needed for the object likes method
+String FACEBOOK_ACCESS_TOKEN = "";    // not needed for the page fan count
 String FACEBOOK_APP_ID = "ENTER_YOUR_APP_ID";
 String FACEBOOK_APP_SECRET = "ENTER_YOUR_APP_SECRET";
 
@@ -119,9 +121,9 @@ bool saveConfig() {
 
 void loop() {
   if (millis() > api_due_time) {
-    int pageLikes = api->getTotalObjectLikes("59520506051");
+    int pageLikes = api->getPageFanCount("59520506051");
     if(pageLikes >= 0) {
-      Serial.print("Facebook likes: ");
+      Serial.print("Facebook page likes: ");
       Serial.println(pageLikes);
     } else {
       Serial.println("Error getting likes");

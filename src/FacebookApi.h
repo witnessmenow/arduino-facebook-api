@@ -36,8 +36,10 @@ class FacebookApi
     FacebookApi(Client &client, String appId, String appSecret, String accessToken);
     String getFriends();
     int getTotalFriends();
-    int getTotalObjectLikes(String objectId);
+    int getPageFanCount(String pageId);
     String extendAccessToken();
+    String extendAccessToken(appId, appSecret);
+    String sendGetToFacebook(String command);
 
   private:
     Client *client;
@@ -45,7 +47,6 @@ class FacebookApi
     String _appSecret;
     String _accessToken;
     const int maxMessageLength = 10000;
-    String sendGetToFacebook(String command);
 };
 
 #endif
