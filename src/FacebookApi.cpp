@@ -21,9 +21,11 @@
 
 #include "FacebookApi.h"
 
-FacebookApi::FacebookApi(Client &client, String accessToken)	{
+FacebookApi::FacebookApi(Client &client, String accessToken, String appId = "", String appSecret = "") {
 	this->client = &client;
   _accessToken = accessToken;
+	_appId = appId;
+	_appSecret = appSecret;
 }
 
 String FacebookApi::sendGetToFacebook(String command) {
@@ -89,14 +91,17 @@ String FacebookApi::sendGetToFacebook(String command) {
 			}
 		}
 	}
-
 	return body;
 }
 
 String FacebookApi::getFriends(){
-	String command="/v2.9/me/friends?access_token="+_accessToken;
+	String command = "/v2.9/me/friends?access_token="+_accessToken;
 	//Serial.println(command);
 	return sendGetToFacebook(command);  //recieve reply from facebook
+}
+
+String FacebookApi::extendAccessToken() {
+		extendAccessToken(_appId , _appSecret);
 }
 
 String FacebookApi::extendAccessToken(String appId, String appSecret){
@@ -133,5 +138,31 @@ int FacebookApi::getTotalFriends(){
     Serial.println("Failed to parse JSON");
   }
 
+  return -1;
+}
+
+/**
+ * From the official Facebook API documentation
+ *
+ * "The number of users who like the Page.
+ *  For Global Pages this is the count for all Pages across the brand."
+ *
+ *  https://developers.facebook.com/docs/graph-api/reference/page
+ */
+int FacebookApi::getPageFanCount(String pageId) {
+	String command = "/v2.9/" + pageId + "?fields=fan_count&access_token=" + _appId + "|" + _appSecret;
+	String response = sendGetToFacebook(command);
+
+  DynamicJsonBuffer jsonBuffer;
+	JsonObject& root = jsonBuffer.parseObject(response);
+	if(root.success()) {
+		if(root.containsKey("fan_count")) {
+			return root["fan_count"].as<int>();
+		} else {
+			Serial.println("JSON respnse was not as expected");
+		}
+  }	else {
+		Serial.println("Failed to parse JSON");
+	}
   return -1;
 }
