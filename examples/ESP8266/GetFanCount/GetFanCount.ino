@@ -67,7 +67,7 @@ void setup() {
 
   // loading the saved config if there is a new key saved there
   loadConfig();
-  api = new FacebookApi(client, FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, FACEBOOK_ACCESS_TOKEN);
+  api = new FacebookApi(client, FACEBOOK_ACCESS_TOKEN, FACEBOOK_APP_ID, FACEBOOK_APP_SECRET);
 }
 
 bool loadConfig() {
