@@ -116,7 +116,7 @@ String FacebookApi::extendAccessToken(String appId, String appSecret){
 			_accessToken = root["access_token"].as<String>();
 			return _accessToken;
 		} else {
-      Serial.println("JSON respnse was not as expected");
+      Serial.println("JSON response was not as expected");
     }
   } else {
     Serial.println("Failed to parse JSON");
@@ -132,7 +132,7 @@ int FacebookApi::getTotalFriends(){
 		if (root.containsKey("summary")) {
 			return root["summary"]["total_count"].as<int>();
 		} else {
-      Serial.println("JSON respnse was not as expected");
+      Serial.println("JSON response was not as expected");
     }
   } else {
     Serial.println("Failed to parse JSON");
@@ -150,7 +150,7 @@ int FacebookApi::getTotalFriends(){
  *  https://developers.facebook.com/docs/graph-api/reference/page
  */
 int FacebookApi::getPageFanCount(String pageId) {
-	String command = "/v2.9/" + pageId + "?fields=fan_count&access_token=" + _appId + "|" + _appSecret;
+	String command = "/v8.0/" + pageId + "?fields=fan_count&access_token=" + _accessToken;
 	String response = sendGetToFacebook(command);
 
   DynamicJsonBuffer jsonBuffer;
