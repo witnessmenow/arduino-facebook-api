@@ -108,12 +108,12 @@ String FacebookApi::extendAccessToken(String appId, String appSecret){
 	String command="/oauth/access_token?client_id="+ appId +"&client_secret=" + appSecret + "&grant_type=fb_exchange_token&fb_exchange_token="+_accessToken;
 	//Serial.println(command);
 	String response = sendGetToFacebook(command);
-  DynamicJsonBuffer jsonBuffer;
-	JsonObject& root = jsonBuffer.parseObject(response);
-  if (root.success()) {
-		if (root.containsKey("access_token")) {
+  	DynamicJsonDocument jsonBuffer(1024);
+	DeserializationError error = deserializeJson(jsonBuffer, response);
+  if (!error) {
+		if (jsonBuffer.containsKey("access_token")) {
 			Serial.println("Updated Token");
-			_accessToken = root["access_token"].as<String>();
+			_accessToken = jsonBuffer["access_token"].as<String>();
 			return _accessToken;
 		} else {
       Serial.println("JSON response was not as expected");
@@ -126,11 +126,11 @@ String FacebookApi::extendAccessToken(String appId, String appSecret){
 
 int FacebookApi::getTotalFriends(){
   String response = getFriends();
-  DynamicJsonBuffer jsonBuffer;
-	JsonObject& root = jsonBuffer.parseObject(response);
-  if (root.success()) {
-		if (root.containsKey("summary")) {
-			return root["summary"]["total_count"].as<int>();
+  DynamicJsonDocument  jsonBuffer(1024);
+  DeserializationError error = deserializeJson(jsonBuffer, response);
+  if (!error) {
+		if (jsonBuffer.containsKey("summary")) {
+			return jsonBuffer["summary"]["total_count"];
 		} else {
       Serial.println("JSON response was not as expected");
     }
@@ -153,11 +153,11 @@ int FacebookApi::getPageFanCount(String pageId) {
 	String command = "/v8.0/" + pageId + "?fields=fan_count&access_token=" + _accessToken;
 	String response = sendGetToFacebook(command);
 
-  DynamicJsonBuffer jsonBuffer;
-	JsonObject& root = jsonBuffer.parseObject(response);
-	if(root.success()) {
-		if(root.containsKey("fan_count")) {
-			return root["fan_count"].as<int>();
+    DynamicJsonDocument jsonBuffer(1024);
+	DeserializationError error = deserializeJson(jsonBuffer, response);
+	if(!error) {
+		if(jsonBuffer.containsKey("fan_count")) {
+			return jsonBuffer["fan_count"];
 		} else {
 			Serial.println("JSON respnse was not as expected");
 		}
