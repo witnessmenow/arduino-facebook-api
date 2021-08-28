@@ -95,13 +95,14 @@ String FacebookApi::sendGetToFacebook(String command) {
 }
 
 String FacebookApi::getFriends(){
-	String command = "/v2.9/me/friends?access_token="+_accessToken;
+	String command = "/v11.0/me/friends?access_token="+_accessToken;
 	//Serial.println(command);
 	return sendGetToFacebook(command);  //recieve reply from facebook
 }
 
 String FacebookApi::extendAccessToken() {
-		extendAccessToken(_appId , _appSecret);
+	extendAccessToken(_appId , _appSecret);
+	return "";
 }
 
 String FacebookApi::extendAccessToken(String appId, String appSecret){
@@ -150,7 +151,7 @@ int FacebookApi::getTotalFriends(){
  *  https://developers.facebook.com/docs/graph-api/reference/page
  */
 int FacebookApi::getPageFanCount(String pageId) {
-	String command = "/v8.0/" + pageId + "?fields=fan_count&access_token=" + _accessToken;
+	String command = "/v11.0/" + pageId + "?fields=fan_count&access_token=" + _accessToken;
 	String response = sendGetToFacebook(command);
 
     DynamicJsonDocument jsonBuffer(1024);
